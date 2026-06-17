@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Beauty CRM">
+<meta name="theme-color" content="black">
+<title>Beauty CRM</title>
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+:root{
+  --bg:#0a0a0a;
+  --s1:#111;
+  --s2:#181818;
+  --s3:#222;
+  --border:#2a2a2a;
+  --border2:#333;
+  --text:#f5f5f5;
+  --muted:#777;
+  --dim:#444;
+  --rose:#ff6b8a;
+  --rose-bg:rgba(255,107,138,0.1);
+  --rose-glow:rgba(255,107,138,0.2);
+  --gold:#f5c842;
+  --gold-bg:rgba(245,200,66,0.1);
+  --mint:#5fdfb0;
+  --mint-bg:rgba(95,223,176,0.1);
+  --hot:#ff6b6b;
+  --hot-bg:rgba(255,107,107,0.12);
+  --warm:#ffb347;
+  --warm-bg:rgba(255,179,71,0.12);
+  --cold:#7eb8ff;
+  --cold-bg:rgba(126,184,255,0.12);
+  --accent:var(--rose);
+  --r:16px;
+  --r-sm:10px;
+  --font:'Inter',sans-serif;
+  --display:'Syne',sans-serif;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+html,body{height:100%;overflow:hidden;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── HEADER ── */
+.header{
+  background:var(--bg);
+  padding:16px 20px 0;
+  flex-shrink:0;
+  border-bottom:1px solid var(--border);
+  padding-bottom:0;
+}
+.header-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.brand-dot{
+  width:8px;height:8px;
+  background:var(--rose);
+  border-radius:50%;
+  box-shadow:0 0 10px var(--rose-glow);
+  animation:throb 3s ease-in-out infinite;
+}
+@keyframes throb{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.7);}}
+.brand-name{
+  font-family:var(--display);
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:-0.02em;
+}
+.brand-name span{color:var(--rose);}
+.header-btn{
+  width:36px;height:36px;
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;
+}
+
+/* Tabs */
+.tabs{
+  display:flex;
+  gap:0;
+  position:relative;
+}
+.tab{
+  flex:1;
+  padding:10px 0;
+  text-align:center;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  color:var(--muted);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all 0.2s;
+  position:relative;
+}
+.tab.active{color:var(--rose);border-bottom-color:var(--rose);}
+
+/* ── SCREENS ── */
+.screens{flex:1;overflow:hidden;position:relative;}
+.screen{
+  position:absolute;inset:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:20px 16px;
+  padding-bottom:calc(24px + var(--safe-bottom));
+  display:none;
+}
+.screen.active{display:block;}
+
+/* ── QUICK LOG SCREEN ── */
+.quick-label{
+  font-size:11px;font-weight:600;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:8px;margin-top:20px;
+}
+.quick-label:first-child{margin-top:0;}
+
+.name-row{display:flex;gap:10px;}
+.field-input{
+  width:100%;
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:16px;
+  padding:13px 14px;
+  outline:none;
+  transition:border-color 0.2s;
+  -webkit-appearance:none;
+}
+.field-input:focus{border-color:var(--rose);}
+.field-input::placeholder{color:var(--dim);}
+
+/* Product chips */
+.chip-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.chip{
+  padding:11px 10px;
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  font-size:13px;
+  font-weight:500;
+  color:var(--muted);
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.15s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.chip.sel{
+  background:var(--rose-bg);
+  border-color:var(--rose);
+  color:var(--rose);
+}
+
+/* Status big buttons */
+.status-grid{display:flex;gap:8px;}
+.status-big{
+  flex:1;
+  padding:14px 8px;
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  font-size:13px;
+  font-weight:600;
+  color:var(--muted);
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.15s;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.status-big .sicon{font-size:20px;}
+.status-big.sel-hot{background:var(--hot-bg);border-color:var(--hot);color:var(--hot);}
+.status-big.sel-warm{background:var(--warm-bg);border-color:var(--warm);color:var(--warm);}
+.status-big.sel-cold{background:var(--cold-bg);border-color:var(--cold);color:var(--cold);}
+
+/* Channel row */
+.channel-row{display:flex;gap:8px;flex-wrap:wrap;}
+.ch-btn{
+  padding:8px 14px;
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:13px;
+  font-weight:500;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all 0.15s;
+  display:flex;align-items:center;gap:5px;
+}
+.ch-btn.sel{background:var(--rose-bg);border-color:var(--rose);color:var(--rose);}
+
+/* Voice btn */
+.voice-btn{
+  width:100%;
+  padding:14px;
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  color:var(--muted);
+  font-family:var(--font);
+  font-size:14px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;
+}
+.voice-btn.recording{
+  background:var(--hot-bg);
+  border-color:var(--hot);
+  color:var(--hot);
+  animation:rec-pulse 1s ease-in-out infinite;
+}
+@keyframes rec-pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+
+/* Submit btn */
+.btn-save{
+  width:100%;
+  padding:16px;
+  background:var(--rose);
+  color:#fff;
+  border:none;
+  border-radius:var(--r-sm);
+  font-family:var(--font);
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:24px;
+  transition:opacity 0.2s,transform 0.1s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-save:active{transform:scale(0.98);}
+.btn-save:disabled{opacity:0.35;cursor:not-allowed;}
+
+/* ── CONTACTS SCREEN ── */
+.search-bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  padding:11px 14px;
+  margin-bottom:16px;
+}
+.search-bar input{
+  flex:1;background:none;border:none;outline:none;
+  font-family:var(--font);font-size:15px;color:var(--text);
+}
+.search-bar input::placeholder{color:var(--dim);}
+
+.filter-row{
+  display:flex;gap:6px;
+  margin-bottom:16px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  scrollbar-width:none;
+}
+.filter-row::-webkit-scrollbar{display:none;}
+.f-chip{
+  padding:6px 14px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:var(--s2);
+  font-size:12px;font-weight:600;
+  color:var(--muted);white-space:nowrap;cursor:pointer;
+  transition:all 0.15s;
+}
+.f-chip.on{background:var(--rose-bg);border-color:var(--rose);color:var(--rose);}
+
+.contact-list{display:flex;flex-direction:column;gap:10px;}
+.contact-card{
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:14px 16px;
+  display:flex;align-items:flex-start;gap:12px;
+  cursor:pointer;
+  transition:border-color 0.15s;
+  text-decoration:none;color:inherit;
+}
+.contact-card:active{border-color:var(--rose);}
+.avatar{
+  width:42px;height:42px;min-width:42px;
+  border-radius:12px;
+  background:var(--s3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);
+  font-size:16px;font-weight:700;
+  color:var(--rose);
+}
+.contact-info{flex:1;min-width:0;}
+.contact-name{font-size:15px;font-weight:600;margin-bottom:2px;}
+.contact-product{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.contact-meta{
+  display:flex;align-items:center;flex-direction:column;gap:6px;align-items:flex-end;
+}
+.status-pill{
+  font-size:11px;font-weight:700;
+  padding:2px 9px;border-radius:20px;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+}
+.pill-hot{background:var(--hot-bg);color:var(--hot);}
+.pill-warm{background:var(--warm-bg);color:var(--warm);}
+.pill-cold{background:var(--cold-bg);color:var(--cold);}
+.contact-date{font-size:11px;color:var(--dim);}
+.wa-link{
+  width:32px;height:32px;
+  background:rgba(37,211,102,0.12);
+  border:1px solid rgba(37,211,102,0.25);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  text-decoration:none;
+  flex-shrink:0;
+}
+
+.empty-state{
+  text-align:center;padding:48px 24px;color:var(--dim);
+}
+.empty-state .ei{font-size:40px;margin-bottom:12px;}
+.empty-state p{font-size:14px;line-height:1.6;}
+
+/* ── STATS SCREEN ── */
+.stats-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:16px;
+}
+.stat-card{
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:16px;
+}
+.stat-val{
+  font-family:var(--display);
+  font-size:32px;font-weight:800;
+  letter-spacing:-0.04em;
+  line-height:1;
+  margin-bottom:4px;
+}
+.stat-val.rose{color:var(--rose);}
+.stat-val.gold{color:var(--gold);}
+.stat-val.mint{color:var(--mint);}
+.stat-label{font-size:12px;color:var(--muted);font-weight:500;}
+
+.bar-section{
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:16px;
+  margin-bottom:10px;
+}
+.bar-title{font-size:13px;font-weight:600;margin-bottom:14px;color:var(--muted);letter-spacing:0.04em;text-transform:uppercase;}
+.bar-row{margin-bottom:12px;}
+.bar-meta{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
+.bar-track{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width 0.6s ease;}
+.fill-hot{background:var(--hot);}
+.fill-warm{background:var(--warm);}
+.fill-cold{background:var(--cold);}
+
+/* ── SETTINGS SCREEN ── */
+.settings-section{margin-bottom:24px;}
+.settings-title{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.setting-row{
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  padding:14px;
+  margin-bottom:8px;
+}
+.setting-row label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px;font-weight:500;}
+.setting-row input{
+  width:100%;background:var(--s3);border:1px solid var(--border2);border-radius:8px;
+  color:var(--text);font-family:var(--font);font-size:14px;padding:10px 12px;outline:none;
+}
+.setting-row input:focus{border-color:var(--rose);}
+.btn-setting{
+  width:100%;padding:12px;background:var(--s2);border:1px solid var(--border);
+  border-radius:var(--r-sm);color:var(--muted);font-family:var(--font);
+  font-size:14px;font-weight:500;cursor:pointer;margin-bottom:8px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.15s;
+}
+.btn-setting:hover{border-color:var(--rose);color:var(--rose);}
+.btn-setting.primary{background:var(--rose);border-color:var(--rose);color:#fff;}
+
+.sheet-code{
+  background:var(--s3);border-radius:8px;padding:12px;
+  font-family:monospace;font-size:11px;color:#5fdfb0;
+  line-height:1.6;overflow-x:auto;white-space:pre;
+  margin-top:8px;
+}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--s3);border:1px solid var(--border2);
+  color:var(--text);padding:10px 20px;border-radius:20px;
+  font-size:14px;font-weight:500;
+  opacity:0;transition:all 0.25s;pointer-events:none;
+  z-index:999;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{background:var(--mint-bg);border-color:var(--mint);color:var(--mint);}
+.toast.error{background:var(--hot-bg);border-color:var(--hot);color:var(--hot);}
+
+/* ── CONTACT DETAIL OVERLAY ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.overlay.open{opacity:1;pointer-events:all;}
+.overlay-sheet{
+  background:var(--s1);
+  border-radius:20px 20px 0 0;
+  border-top:1px solid var(--border);
+  padding:16px 20px;
+  padding-bottom:calc(24px + var(--safe-bottom));
+  max-height:85vh;
+  overflow-y:auto;
+  transform:translateY(40px);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.overlay.open .overlay-sheet{transform:translateY(0);}
+.overlay-handle{
+  width:36px;height:4px;background:var(--border2);border-radius:2px;
+  margin:0 auto 18px;
+}
+.overlay-name{
+  font-family:var(--display);font-size:22px;font-weight:700;
+  margin-bottom:4px;letter-spacing:-0.02em;
+}
+.overlay-product{font-size:14px;color:var(--muted);margin-bottom:16px;}
+.overlay-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 0;border-bottom:1px solid var(--border);
+  font-size:14px;
+}
+.overlay-row:last-of-type{border-bottom:none;}
+.overlay-key{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+.overlay-val{color:var(--text);font-weight:500;}
+.overlay-actions{display:flex;gap:10px;margin-top:16px;}
+.btn-wa{
+  flex:1;padding:13px;background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.3);
+  border-radius:var(--r-sm);color:#25d366;
+  font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-delete{
+  padding:13px 16px;background:var(--hot-bg);border:1px solid rgba(255,107,107,0.3);
+  border-radius:var(--r-sm);color:var(--hot);
+  font-family:var(--font);font-size:14px;cursor:pointer;
+}
+
+/* Spinner */
+.spin{
+  width:18px;height:18px;border:2px solid rgba(255,255,255,0.2);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin 0.65s linear infinite;display:none;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div class="brand-name">Beauty<span>CRM</span></div>
+    </div>
+    <div class="header-btn" onclick="showTab('settings')" title="Settings">⚙️</div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('log')" id="tab-log">＋ Log</div>
+    <div class="tab" onclick="showTab('contacts')" id="tab-contacts">Contacts</div>
+    <div class="tab" onclick="showTab('stats')" id="tab-stats">Stats</div>
+  </div>
+</div>
+
+<!-- Screens -->
+<div class="screens">
+
+  <!-- ── LOG SCREEN ── -->
+  <div class="screen active" id="screen-log">
+
+    <div class="quick-label">Customer name</div>
+    <input class="field-input" id="q-name" type="text" placeholder="Sara, Fatma, Aisha…" autocomplete="off">
+
+    <div class="quick-label">Phone / username</div>
+    <input class="field-input" id="q-phone" type="tel" placeholder="+90 5xx or @username" autocomplete="off">
+
+    <div class="quick-label">Product interest</div>
+    <div class="chip-grid" id="productChips">
+      <div class="chip" onclick="toggleChip(this)">💧 Serum</div>
+      <div class="chip" onclick="toggleChip(this)">✨ Moisturiser</div>
+      <div class="chip" onclick="toggleChip(this)">💄 Lipstick</div>
+      <div class="chip" onclick="toggleChip(this)">🌿 Face Oil</div>
+      <div class="chip" onclick="toggleChip(this)">🧴 Toner</div>
+      <div class="chip" onclick="toggleChip(this)">🌞 SPF</div>
+      <div class="chip" onclick="toggleChip(this)">💆 Mask</div>
+      <div class="chip" onclick="toggleChip(this)">🎁 Gift Set</div>
+    </div>
+    <input class="field-input" id="q-product-other" type="text" placeholder="Other product…" style="margin-top:8px;" autocomplete="off">
+
+    <div class="quick-label">Lead status</div>
+    <div class="status-grid">
+      <div class="status-big" id="s-hot" onclick="setStatus('Hot')">
+        <span class="sicon">🔥</span><span>Hot</span>
+      </div>
+      <div class="status-big" id="s-warm" onclick="setStatus('Warm')">
+        <span class="sicon">☀️</span><span>Warm</span>
+      </div>
+      <div class="status-big" id="s-cold" onclick="setStatus('Cold')">
+        <span class="sicon">❄️</span><span>Cold</span>
+      </div>
+    </div>
+
+    <div class="quick-label">Source channel</div>
+    <div class="channel-row">
+      <div class="ch-btn sel" onclick="selectChannel(this,'WhatsApp')">💬 WhatsApp</div>
+      <div class="ch-btn" onclick="selectChannel(this,'Instagram')">📸 Instagram</div>
+      <div class="ch-btn" onclick="selectChannel(this,'Messenger')">💙 Messenger</div>
+    </div>
+
+    <div class="quick-label">Quick note <span style="color:var(--dim);font-weight:400;text-transform:none;">(optional)</span></div>
+    <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+      🎙️ <span id="voiceLabel">Tap to speak a note</span>
+    </button>
+    <input class="field-input" id="q-notes" type="text" placeholder="Note will appear here…" style="margin-top:8px;" autocomplete="off">
+
+    <button class="btn-save" id="saveBtn" onclick="saveContact()">
+      <div class="spin" id="saveSpin"></div>
+      <span id="saveLabel">Save contact</span>
+    </button>
+  </div>
+
+  <!-- ── CONTACTS SCREEN ── -->
+  <div class="screen" id="screen-contacts">
+    <div class="search-bar">
+      🔍
+      <input type="text" id="searchInput" placeholder="Search name or product…" oninput="renderContacts()">
+    </div>
+    <div class="filter-row">
+      <div class="f-chip on" onclick="toggleFilter(this,'All')">All</div>
+      <div class="f-chip" onclick="toggleFilter(this,'Hot')">🔥 Hot</div>
+      <div class="f-chip" onclick="toggleFilter(this,'Warm')">☀️ Warm</div>
+      <div class="f-chip" onclick="toggleFilter(this,'Cold')">❄️ Cold</div>
+    </div>
+    <div class="contact-list" id="contactList"></div>
+  </div>
+
+  <!-- ── STATS SCREEN ── -->
+  <div class="screen" id="screen-stats">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val rose" id="st-total">0</div>
+        <div class="stat-label">Total leads</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val gold" id="st-hot">0</div>
+        <div class="stat-label">Hot 🔥</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val mint" id="st-conv">0%</div>
+        <div class="stat-label">Hot rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="st-today" style="color:var(--cold)">0</div>
+        <div class="stat-label">Today</div>
+      </div>
+    </div>
+
+    <div class="bar-section">
+      <div class="bar-title">Lead status breakdown</div>
+      <div class="bar-row">
+        <div class="bar-meta"><span>Hot 🔥</span><span id="b-hot-n">0</span></div>
+        <div class="bar-track"><div class="bar-fill fill-hot" id="b-hot" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-meta"><span>Warm ☀️</span><span id="b-warm-n">0</span></div>
+        <div class="bar-track"><div class="bar-fill fill-warm" id="b-warm" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-meta"><span>Cold ❄️</span><span id="b-cold-n">0</span></div>
+        <div class="bar-track"><div class="bar-fill fill-cold" id="b-cold" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="bar-section">
+      <div class="bar-title">Top channels</div>
+      <div id="channelBars"></div>
+    </div>
+
+    <div class="bar-section">
+      <div class="bar-title">Top products</div>
+      <div id="productBars"></div>
+    </div>
+
+    <button class="btn-setting" style="margin-top:8px;" onclick="exportCSV()">📤 Export contacts as CSV</button>
+  </div>
+
+  <!-- ── SETTINGS SCREEN ── -->
+  <div class="screen" id="screen-settings">
+    <div class="settings-section">
+      <div class="settings-title">Google Sheet sync</div>
+      <div class="setting-row">
+        <label>Apps Script webhook URL</label>
+        <input type="url" id="webhookInput" placeholder="https://script.google.com/macros/s/…/exec">
+      </div>
+      <button class="btn-setting primary" onclick="saveWebhook()">Save webhook</button>
+      <button class="btn-setting" onclick="testWebhook()">Test connection</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Google Sheet setup (one time)</div>
+      <div class="setting-row" style="font-size:13px;color:var(--muted);line-height:1.6;">
+        1. Create a Google Sheet with headers:<br>
+        <code style="color:var(--rose);font-size:11px;">Name | Phone | Products | Channel | Status | Date | Notes</code><br><br>
+        2. Open <strong style="color:var(--text);">Extensions → Apps Script</strong><br>
+        3. Paste this code and deploy as Web App:
+        <div class="sheet-code">function doPost(e) {
+  var s = SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getActiveSheet();
+  var d = JSON.parse(e.postData.contents);
+  s.appendRow([d.name,d.phone,
+    d.product,d.channel,
+    d.status,d.date,d.notes]);
+  return ContentService
+    .createTextOutput('{"ok":true}')
+    .setMimeType(
+      ContentService.MimeType.JSON);
+}</div>
+        4. Set access to <strong style="color:var(--text);">Anyone</strong>, copy the URL above.
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Data</div>
+      <button class="btn-setting" onclick="exportCSV()">📤 Export CSV</button>
+      <button class="btn-setting" onclick="syncAll()">🔄 Sync all to Sheet</button>
+      <button class="btn-setting" style="color:var(--hot);border-color:rgba(255,107,107,0.3);" onclick="clearAll()">🗑 Clear all data</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Contact detail overlay -->
+<div class="overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="overlay-sheet">
+    <div class="overlay-handle"></div>
+    <div class="overlay-name" id="d-name"></div>
+    <div class="overlay-product" id="d-product"></div>
+    <div class="overlay-row"><span class="overlay-key">Phone</span><span class="overlay-val" id="d-phone"></span></div>
+    <div class="overlay-row"><span class="overlay-key">Status</span><span class="overlay-val" id="d-status"></span></div>
+    <div class="overlay-row"><span class="overlay-key">Channel</span><span class="overlay-val" id="d-channel"></span></div>
+    <div class="overlay-row"><span class="overlay-key">Date</span><span class="overlay-val" id="d-date"></span></div>
+    <div class="overlay-row"><span class="overlay-key">Notes</span><span class="overlay-val" id="d-notes"></span></div>
+    <div class="overlay-actions">
+      <button class="btn-wa" id="d-wa">💬 Open WhatsApp</button>
+      <button class="btn-delete" onclick="deleteContact()">🗑</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+let contacts = JSON.parse(localStorage.getItem('bcrm_contacts') || '[]');
+let webhook = localStorage.getItem('bcrm_webhook') || '';
+let selectedStatus = '';
+let selectedChannel = 'WhatsApp';
+let selectedChips = new Set();
+let activeFilter = 'All';
+let openContactIdx = null;
+let recognition = null;
+let isRecording = false;
+
+// ── INIT ──
+document.getElementById('webhookInput').value = webhook;
+renderContacts();
+renderStats();
+
+// ── TABS ──
+function showTab(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  const tabEl = document.getElementById('tab-' + name);
+  if(tabEl) tabEl.classList.add('active');
+  if(name === 'contacts') renderContacts();
+  if(name === 'stats') renderStats();
+}
+
+// ── LOG FORM ──
+function toggleChip(el) {
+  el.classList.toggle('sel');
+  const txt = el.textContent.replace(/^[^\w]+/,'').trim();
+  if(el.classList.contains('sel')) selectedChips.add(txt);
+  else selectedChips.delete(txt);
+}
+
+function setStatus(val) {
+  selectedStatus = val;
+  ['Hot','Warm','Cold'].forEach(s => {
+    const el = document.getElementById('s-'+s.toLowerCase());
+    el.className = 'status-big' + (s === val ? ` sel-${s.toLowerCase()}` : '');
+  });
+}
+
+function selectChannel(el, val) {
+  document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedChannel = val;
+}
+
+// ── VOICE ──
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    toast('Voice not supported on this browser', 'error'); return;
+  }
+  if (isRecording) { recognition.stop(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.onstart = () => {
+    isRecording = true;
+    document.getElementById('voiceBtn').classList.add('recording');
+    document.getElementById('voiceLabel').textContent = 'Recording… tap to stop';
+  };
+  recognition.onresult = (e) => {
+    document.getElementById('q-notes').value = e.results[0][0].transcript;
+  };
+  recognition.onend = () => {
+    isRecording = false;
+    document.getElementById('voiceBtn').classList.remove('recording');
+    document.getElementById('voiceLabel').textContent = 'Tap to speak a note';
+  };
+  recognition.start();
+}
+
+// ── SAVE ──
+async function saveContact() {
+  const name = document.getElementById('q-name').value.trim();
+  const phone = document.getElementById('q-phone').value.trim();
+  if (!name) { toast('Enter a customer name', 'error'); return; }
+  if (!selectedStatus) { toast('Pick a lead status', 'error'); return; }
+
+  const chips = [...selectedChips];
+  const other = document.getElementById('q-product-other').value.trim();
+  const products = [...chips, ...(other ? [other] : [])].join(', ') || 'Not specified';
+  const notes = document.getElementById('q-notes').value.trim();
+  const today = new Date().toLocaleDateString('en-GB');
+
+  const entry = { name, phone, product: products, channel: selectedChannel, status: selectedStatus, date: today, notes, id: Date.now() };
+
+  // Save locally first
+  contacts.unshift(entry);
+  localStorage.setItem('bcrm_contacts', JSON.stringify(contacts));
+
+  // Push to sheet if webhook set
+  const btn = document.getElementById('saveBtn');
+  const spin = document.getElementById('saveSpin');
+  const label = document.getElementById('saveLabel');
+  btn.disabled = true; spin.style.display = 'block'; label.textContent = 'Saving…';
+
+  if (webhook) {
+    try {
+      await fetch(webhook, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(entry) });
+      toast('✓ Saved & synced to Sheet', 'success');
+    } catch { toast('✓ Saved locally (Sheet offline)', 'success'); }
+  } else {
+    toast('✓ Contact saved', 'success');
+  }
+
+  resetForm();
+  btn.disabled = false; spin.style.display = 'none'; label.textContent = 'Save contact';
+}
+
+function resetForm() {
+  document.getElementById('q-name').value = '';
+  document.getElementById('q-phone').value = '';
+  document.getElementById('q-notes').value = '';
+  document.getElementById('q-product-other').value = '';
+  selectedStatus = ''; selectedChips = new Set();
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+  ['hot','warm','cold'].forEach(s => document.getElementById('s-'+s).className = 'status-big');
+  document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('sel'));
+  document.querySelector('.ch-btn').classList.add('sel');
+  selectedChannel = 'WhatsApp';
+}
+
+// ── CONTACTS ──
+function renderContacts() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  let list = contacts.filter(c => {
+    const matchFilter = activeFilter === 'All' || c.status === activeFilter;
+    const matchSearch = !q || c.name.toLowerCase().includes(q) || c.product.toLowerCase().includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  const el = document.getElementById('contactList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div class="ei">🌸</div><p>No contacts yet.<br>Log your first inquiry from the + Log tab.</p></div>`;
+    return;
+  }
+
+  el.innerHTML = list.map((c, i) => {
+    const initials = c.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const waNum = c.phone.replace(/\D/g,'');
+    const waLink = waNum ? `https://wa.me/${waNum}` : '#';
+    const realIdx = contacts.indexOf(c);
+    return `
+    <div class="contact-card" onclick="openDetail(${realIdx})">
+      <div class="avatar">${initials}</div>
+      <div class="contact-info">
+        <div class="contact-name">${c.name}</div>
+        <div class="contact-product">${c.product}</div>
+      </div>
+      <div class="contact-meta">
+        <span class="status-pill pill-${c.status.toLowerCase()}">${c.status}</span>
+        <span class="contact-date">${c.date}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleFilter(el, val) {
+  document.querySelectorAll('.f-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  activeFilter = val;
+  renderContacts();
+}
+
+// ── DETAIL OVERLAY ──
+function openDetail(idx) {
+  openContactIdx = idx;
+  const c = contacts[idx];
+  document.getElementById('d-name').textContent = c.name;
+  document.getElementById('d-product').textContent = c.product;
+  document.getElementById('d-phone').textContent = c.phone || '—';
+  document.getElementById('d-status').innerHTML = `<span class="status-pill pill-${c.status.toLowerCase()}">${c.status}</span>`;
+  document.getElementById('d-channel').textContent = c.channel;
+  document.getElementById('d-date').textContent = c.date;
+  document.getElementById('d-notes').textContent = c.notes || '—';
+  const waNum = (c.phone||'').replace(/\D/g,'');
+  const waBtn = document.getElementById('d-wa');
+  waBtn.onclick = () => { if(waNum) window.open(`https://wa.me/${waNum}`,'_blank'); else toast('No phone number saved','error'); };
+  document.getElementById('detailOverlay').classList.add('open');
+}
+
+function closeDetail(e) {
+  if(e.target === document.getElementById('detailOverlay')) {
+    document.getElementById('detailOverlay').classList.remove('open');
+  }
+}
+
+function deleteContact() {
+  if(openContactIdx === null) return;
+  if(!confirm('Delete this contact?')) return;
+  contacts.splice(openContactIdx, 1);
+  localStorage.setItem('bcrm_contacts', JSON.stringify(contacts));
+  document.getElementById('detailOverlay').classList.remove('open');
+  renderContacts();
+  renderStats();
+  toast('Contact deleted');
+}
+
+// ── STATS ──
+function renderStats() {
+  const total = contacts.length;
+  const hot = contacts.filter(c=>c.status==='Hot').length;
+  const warm = contacts.filter(c=>c.status==='Warm').length;
+  const cold = contacts.filter(c=>c.status==='Cold').length;
+  const today = new Date().toLocaleDateString('en-GB');
+  const todayCount = contacts.filter(c=>c.date===today).length;
+
+  document.getElementById('st-total').textContent = total;
+  document.getElementById('st-hot').textContent = hot;
+  document.getElementById('st-conv').textContent = total ? Math.round(hot/total*100)+'%' : '0%';
+  document.getElementById('st-today').textContent = todayCount;
+
+  const pct = n => total ? Math.round(n/total*100) : 0;
+  document.getElementById('b-hot').style.width = pct(hot)+'%';
+  document.getElementById('b-warm').style.width = pct(warm)+'%';
+  document.getElementById('b-cold').style.width = pct(cold)+'%';
+  document.getElementById('b-hot-n').textContent = hot;
+  document.getElementById('b-warm-n').textContent = warm;
+  document.getElementById('b-cold-n').textContent = cold;
+
+  // Channels
+  const chMap = {};
+  contacts.forEach(c => chMap[c.channel] = (chMap[c.channel]||0)+1);
+  const chMax = Math.max(1,...Object.values(chMap));
+  document.getElementById('channelBars').innerHTML = Object.entries(chMap)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([k,v]) => `
+    <div class="bar-row">
+      <div class="bar-meta"><span>${k}</span><span>${v}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v/chMax*100}%;background:var(--rose);"></div></div>
+    </div>`).join('') || '<div style="color:var(--dim);font-size:13px;">No data yet</div>';
+
+  // Products
+  const pMap = {};
+  contacts.forEach(c => (c.product||'').split(',').forEach(p => { const t=p.trim(); if(t&&t!=='Not specified') pMap[t]=(pMap[t]||0)+1; }));
+  const pMax = Math.max(1,...Object.values(pMap));
+  const top5 = Object.entries(pMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  document.getElementById('productBars').innerHTML = top5.map(([k,v]) => `
+    <div class="bar-row">
+      <div class="bar-meta"><span>${k}</span><span>${v}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v/pMax*100}%;background:var(--gold);"></div></div>
+    </div>`).join('') || '<div style="color:var(--dim);font-size:13px;">No data yet</div>';
+}
+
+// ── SETTINGS ──
+function saveWebhook() {
+  webhook = document.getElementById('webhookInput').value.trim();
+  localStorage.setItem('bcrm_webhook', webhook);
+  toast('Webhook saved', 'success');
+}
+
+async function testWebhook() {
+  const url = document.getElementById('webhookInput').value.trim() || webhook;
+  if(!url) { toast('Enter a webhook URL first', 'error'); return; }
+  const test = { name:'Test', phone:'+90 500 000 0000', product:'Vitamin C Serum', channel:'WhatsApp', status:'Warm', date:new Date().toLocaleDateString('en-GB'), notes:'Test row from BeautyCRM' };
+  try {
+    await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(test) });
+    toast('✓ Test row sent — check Sheet', 'success');
+  } catch { toast('Could not reach webhook', 'error'); }
+}
+
+async function syncAll() {
+  if(!webhook) { toast('Set a webhook URL first', 'error'); return; }
+  let synced = 0;
+  for(const c of contacts) {
+    try { await fetch(webhook, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(c) }); synced++; } catch {}
+  }
+  toast(`Synced ${synced} contacts`, 'success');
+}
+
+function exportCSV() {
+  if(!contacts.length) { toast('No contacts to export', 'error'); return; }
+  const header = 'Name,Phone,Products,Channel,Status,Date,Notes';
+  const rows = contacts.map(c => [c.name,c.phone,c.product,c.channel,c.status,c.date,c.notes].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','));
+  const csv = [header,...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'beauty-crm-contacts.csv';
+  a.click();
+  toast('CSV downloaded', 'success');
+}
+
+function clearAll() {
+  if(!confirm('Delete ALL contacts? This cannot be undone.')) return;
+  contacts = [];
+  localStorage.setItem('bcrm_contacts', '[]');
+  renderContacts(); renderStats();
+  toast('All data cleared');
+}
+
+// ── TOAST ──
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  setTimeout(() => el.className = 'toast', 2600);
+}
+</script>
+</body>
+</html>
