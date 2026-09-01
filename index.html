@@ -713,6 +713,36 @@ let openContactIdx = null;
 let recognition = null;
 let isRecording = false;
 
+// ── HUBSPOT ──
+// Fill these in after creating the form in HubSpot (Marketing → Forms → your form → Share/Embed)
+const HUBSPOT_PORTAL_ID = '148403406';
+const HUBSPOT_FORM_GUID = '8a2dc291-8e61-447e-bab3-0322e103ce52';
+
+async function pushToHubSpot(entry) {
+  const [firstname, ...rest] = entry.name.split(' ');
+  const lastname = rest.join(' ');
+  const payload = {
+    fields: [
+      { name: 'firstname', value: firstname || entry.name },
+      { name: 'lastname', value: lastname },
+      { name: 'phone', value: entry.phone },
+      // These four must be created as custom Contact properties in HubSpot first —
+      // use the exact "Internal name" HubSpot generates, not the display label.
+      { name: 'product_interest', value: entry.product },
+      { name: 'lead_status', value: entry.status },
+      { name: 'source_channel', value: entry.channel },
+      { name: 'notes', value: entry.notes }
+    ]
+  };
+  const url = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error('HubSpot submit failed: ' + res.status);
+}
+
 // ── INIT ──
 document.getElementById('webhookInput').value = webhook;
 renderContacts();
@@ -803,12 +833,15 @@ async function saveContact() {
   btn.disabled = true; spin.style.display = 'block'; label.textContent = 'Saving…';
 
   if (webhook) {
-    try {
-      await fetch(webhook, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(entry) });
-      toast('✓ Saved & synced to Sheet', 'success');
-    } catch { toast('✓ Saved locally (Sheet offline)', 'success'); }
-  } else {
-    toast('✓ Contact saved', 'success');
+    try { await fetch(webhook, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(entry) }); } catch {}
+  }
+
+  try {
+    await pushToHubSpot(entry);
+    toast('✓ Saved to HubSpot', 'success');
+  } catch (err) {
+    console.error(err);
+    toast('✓ Saved locally (HubSpot offline)', 'success');
   }
 
   resetForm();
