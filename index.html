@@ -675,6 +675,7 @@ body{
       <div class="settings-title">Data</div>
       <button class="btn-setting" onclick="exportCSV()">📤 Export CSV</button>
       <button class="btn-setting" onclick="syncAll()">🔄 Sync all to Sheet</button>
+      <button class="btn-setting" onclick="retryHubSpotSync()">🔁 Retry failed HubSpot syncs</button>
       <button class="btn-setting" style="color:var(--hot);border-color:rgba(255,107,107,0.3);" onclick="clearAll()">🗑 Clear all data</button>
     </div>
   </div>
@@ -820,7 +821,7 @@ async function saveContact() {
   const notes = document.getElementById('q-notes').value.trim();
   const today = new Date().toLocaleDateString('en-GB');
 
-  const entry = { name, phone, product: products, channel: selectedChannel, status: selectedStatus, date: today, notes, id: Date.now() };
+  const entry = { name, phone, product: products, channel: selectedChannel, status: selectedStatus, date: today, notes, id: Date.now(), synced: false };
 
   // Save locally first
   contacts.unshift(entry);
@@ -838,10 +839,12 @@ async function saveContact() {
 
   try {
     await pushToHubSpot(entry);
+    entry.synced = true;
+    localStorage.setItem('bcrm_contacts', JSON.stringify(contacts));
     toast('✓ Saved to HubSpot', 'success');
   } catch (err) {
     console.error(err);
-    toast('✓ Saved locally (HubSpot offline)', 'success');
+    toast('⚠ Saved locally only — HubSpot sync failed', 'error');
   }
 
   resetForm();
@@ -1007,6 +1010,20 @@ async function syncAll() {
     try { await fetch(webhook, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(c) }); synced++; } catch {}
   }
   toast(`Synced ${synced} contacts`, 'success');
+}
+
+async function retryHubSpotSync() {
+  const unsynced = contacts.filter(c => !c.synced);
+  if (!unsynced.length) { toast('Everything is already in HubSpot', 'success'); return; }
+  let ok = 0, failed = 0;
+  for (const c of unsynced) {
+    try { await pushToHubSpot(c); c.synced = true; ok++; }
+    catch { failed++; }
+  }
+  localStorage.setItem('bcrm_contacts', JSON.stringify(contacts));
+  renderStats();
+  if (failed) toast(`Synced ${ok}, ${failed} still failing — check your Portal ID/Form GUID`, 'error');
+  else toast(`✓ Synced ${ok} contact${ok===1?'':'s'} to HubSpot`, 'success');
 }
 
 function exportCSV() {
